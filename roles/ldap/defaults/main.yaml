@@ -1,0 +1,3 @@
+container_directory: "/opt/containers"
+container_ldap_directory: "{{ container_directory }}/openldap"
+ldap_compose_path: "{{ container_ldap_directory }}/openldap-compose.yaml"

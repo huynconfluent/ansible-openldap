@@ -1,0 +1,59 @@
+---
+- name: Create Container Directory
+  file:
+    path: "{{ container_directory }}"
+    owner: root
+    state: directory
+
+- name: Create LDAP Container Directory
+  file:
+    path: "{{ container_ldap_directory }}"
+    owner: root
+    state: directory
+
+- name: Check if LDAP is running
+  shell:
+    cmd: "docker compose ls"
+  become: true
+  register: ldap_status
+  changed_when: false
+
+- name: Stopping LDAP
+  become: true
+  shell:
+    cmd: "docker compose -f {{ ldap_compose_path }} down"
+  changed_when: false
+  when:
+    - '"openldap" in ldap_status.stdout'
+
+- name: Copy LDAP compose file
+  template:
+    src: "../templates/openldap-compose.yaml.j2"
+    dest: "{{ ldap_compose_path }}"
+    owner: root
+    mode: '0644'
+
+- name: Create LDAP container data directory
+  file:
+    path: "{{ container_ldap_directory }}/data"
+    owner: root
+    state: directory
+
+- name: Create LDAP users directory
+  file:
+    path: "{{ container_ldap_directory }}/data/ldap_users"
+    owner: root
+    state: directory
+
+- name: Copy LDAP files
+  copy:
+    src: "../files/"
+    dest: "{{ container_ldap_directory }}/data/ldap_users/"
+    owner: root
+    mode: '0644'
+
+- name: Starting OpenLDAP
+  shell:
+    cmd: "docker compose -f {{ ldap_compose_path }} up -d"
+  become: true
+  changed_when: false
