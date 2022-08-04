@@ -1,0 +1,50 @@
+---
+- include_tasks: debian.yaml
+  when:
+    - ansible_facts.os_family == "Debian"
+
+- include_tasks: rhel.yaml
+  when:
+    - ansible_facts.os_family == "RedHat"
+
+# TODO: add logic for specifying package version
+- name: Install Docker Engine
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ docker_packages }}"
+
+- name: Docker Started
+  systemd:
+    name: docker
+    state: started
+    enabled: true
+    
+- name: Create cli-plugins directory
+  file:
+    path: "{{ docker_plugins_directory }}"
+    state: directory
+    owner: root
+
+- name: Download docker compose (v2) binary
+  get_url:
+    url: "{{ docker_compose_download }}"
+    dest: "{{ docker_plugins_directory }}/docker-compose"
+    mode: 0755
+    checksum: sha256:https://github.com/docker/compose/releases/download/v{{ docker_compose_version }}/docker-compose-linux-{{ ansible_facts.architecture }}.sha256
+
+- name: Install python3
+  package:
+    state: present
+    name:
+      - python3
+      - python3-pip
+
+- name: Pip Install docker module
+  pip:
+    name: docker
+    state: present
+    executable: pip3
+  vars:
+    ansible_python_interpreter: /usr/bin/python3

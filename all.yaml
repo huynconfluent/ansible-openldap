@@ -1,0 +1,14 @@
+---
+- name: Install Container Runtime
+  tags: cr
+  hosts: ldap
+  tasks:
+    - import_role:
+        name: container_runtime
+
+- name: Deploy OpenLDAP Docker
+  tags: ldap
+  hosts: ldap
+  tasks:
+    - import_role:
+        name: ldap
