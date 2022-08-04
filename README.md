@@ -1,5 +1,7 @@
 # README
 ---
+Ansible Playbook to deploy a docker container for openldap. This can be useful for testing RBAC deployment of cp-ansible in a single VM setup.
+
 
 ## TODO
 - [x] Create initial deployment
