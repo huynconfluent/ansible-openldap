@@ -12,6 +12,15 @@ services:
       LDAP_ORGANISATION: "ConfluentDemo"
       LDAP_DOMAIN: "confluentdemo.io"
       LDAP_BASE_DN: "dc=confluentdemo,dc=io"
+    # LDAPS
+      # LDAP_TLS_VERIFY_CLIENT: "try"
+      # LDAP_TLS_CRT_FILENAME: "openldap.certificate.pem"
+      # LDAP_TLS_KEY_FILENAME: "openldap.key"
+      # LDAP_TLS_CA_CRT_FILENAME: "snakeoil-ca-1.crt"
     volumes:
       - {{ container_ldap_directory }}/data/ldap_users:/container/service/slapd/assets/config/bootstrap/ldif/custom
+    # LDAPS
+      # - {{ container_ldap_direcotry }}/certs/openldap.certificate.pem:/container/service/slapd/assets/certs/openldap.certificate.pem:ro
+      # - {{ container_ldap_directory }}/certs/openldap.key:/container/service/slapd/assets/certs/openldap.key:ro
+      # - {{ container_ldap_directory }}/certs/snakeoil-ca-1.crt:/container/service/slapd/assets/certs/snakeoil-ca-1.crt:ro
     command: "--copy-service --loglevel debug"
